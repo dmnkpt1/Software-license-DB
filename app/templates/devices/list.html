@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Devices{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Client Device Activations</h2>
+        <p>Client view for the Device Information document and activation history.</p>
+    </div>
+    <a class="button" href="/devices/create">Activate device</a>
+</section>
+
+<table>
+    <thead>
+        <tr>
+            <th>License Key</th>
+            <th>Hardware ID</th>
+            <th>Status</th>
+            <th>Activation Date</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for device in devices %}
+            <tr>
+                <td>{{ device.license_key }}</td>
+                <td>{{ device.hardware_id }}</td>
+                <td>{{ device.device_status }}</td>
+                <td>{{ device.activation_date }}</td>
+                <td class="actions">
+                    <a href="/devices/{{ device.license_key }}/{{ device.hardware_id }}/edit">Edit</a>
+                    <a href="/reports/activation-record/{{ device.license_key }}">Report</a>
+                    <form method="post" action="/devices/{{ device.license_key }}/{{ device.hardware_id }}/delete">
+                        <button type="submit" class="danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">No device activations found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

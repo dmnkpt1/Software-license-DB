@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}License Record{% endblock %}
+
+{% block content %}
+<section class="report">
+    <h2>License Record</h2>
+    {% if license %}
+        <div class="report-grid">
+            <p><strong>License ID:</strong> {{ license.license_id }}</p>
+            <p><strong>License Key:</strong> {{ license.license_key }}</p>
+            <p><strong>Issue Date:</strong> {{ license.issue_date }}</p>
+            <p><strong>Status:</strong> {{ license.status }}</p>
+            <p><strong>Duration:</strong> {{ license.duration }}</p>
+            <p><strong>Activation Limit:</strong> {{ license.limit_activation }}</p>
+            <p><strong>Activation Count:</strong> {{ license.activation_count }}</p>
+            <p><strong>Client:</strong> {{ license.client.contact_name }}</p>
+            <p><strong>Contact Email:</strong> {{ license.client.contact_email }}</p>
+            <p><strong>License Type:</strong> {{ license.license_type.type_name }}</p>
+        </div>
+    {% else %}
+        <p>No matching license found.</p>
+    {% endif %}
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Client Dashboard{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <h2>Client dashboard</h2>
+    </div>
+</section>
+
+<section class="grid">
+    <article class="card">
+        <h3>My Licenses</h3>
+        <a class="button" href="/licenses">Open licenses</a>
+    </article>
+    <article class="card">
+        <h3>Check License Status</h3>
+        <a class="button" href="/reports/license-record">Open reports</a>
+    </article>
+    <article class="card">
+        <h3>Activate On Device</h3>
+        <a class="button" href="/devices/create">Activate device</a>
+        <a class="button secondary" href="/devices">View activations</a>
+    </article>
+</section>
+{% endblock %}

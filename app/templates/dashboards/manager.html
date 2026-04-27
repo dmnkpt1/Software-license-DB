@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}License Manager Dashboard{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div>
+        <h2>License Manager dashboard</h2>
+    </div>
+</section>
+
+<section class="grid">
+    <article class="card">
+        <h3>License Request Form</h3>
+        <p>Create, edit, and delete software licenses.</p>
+        <a class="button" href="/licenses/create">Create license</a>
+        <a class="button secondary" href="/licenses">View license table</a>
+    </article>
+    <article class="card">
+        <h3>Payment Confirmation</h3>
+        <p>View payment confirmation data supplied by the external payment service.</p>
+        <a class="button" href="/payments">View payment table</a>
+    </article>
+    <article class="card">
+        <h3>Feature Assignment</h3>
+        <p>Open a license and assign or remove its features.</p>
+        <a class="button" href="/licenses">Open licenses</a>
+    </article>
+    <article class="card">
+        <h3>Reports</h3>
+        <p>Generate the License Record, Activation Record, and License Status Report pages.</p>
+        <a class="button" href="/reports/license-record">Open reports</a>
+    </article>
+</section>
+{% endblock %}

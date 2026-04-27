@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Create License" if mode == "create" else "Edit License" }}{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>{{ "License Request Form" if mode == "create" else "Edit License" }}</h2>
+    </div>
+</section>
+
+<form method="post" class="panel">
+    <div class="form-grid">
+        <label>
+            License ID
+            <input type="number" name="license_id" value="{{ form_data.license_id }}" {% if mode == "edit" %}readonly{% endif %} required>
+        </label>
+        <label>
+            License Key
+            <input type="text" name="license_key" value="{{ form_data.license_key }}" {% if mode == "edit" %}readonly{% endif %} required>
+        </label>
+        <label>
+            Issue Date
+            <input type="date" name="issue_date" value="{{ form_data.issue_date }}" {% if mode == "edit" %}readonly{% endif %} required>
+        </label>
+        <label>
+            Status
+            <select name="status" required>
+                {% for value in license_statuses %}
+                    <option value="{{ value }}" {% if form_data.status == value %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Duration (days)
+            <input type="number" name="duration" value="{{ form_data.duration }}" min="1" required>
+        </label>
+        <label>
+            Activation Limit
+            <input type="number" name="limit_activation" value="{{ form_data.limit_activation }}" min="0" required>
+        </label>
+        <label>
+            Client
+            <select name="client_id" {% if mode == "edit" %}disabled{% endif %} required>
+                <option value="">Select client</option>
+                {% for client in clients %}
+                    <option value="{{ client.client_id }}" {% if form_data.client_id|string == client.client_id|string %}selected{% endif %}>
+                        {{ client.client_id }} - {{ client.contact_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            License Type
+            <select name="type_id" required>
+                <option value="">Select type</option>
+                {% for item in license_types %}
+                    <option value="{{ item.type_id }}" {% if form_data.type_id|string == item.type_id|string %}selected{% endif %}>
+                        {{ item.type_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+    </div>
+    <div class="toolbar form-actions">
+        <button class="button" type="submit">{{ "Create license" if mode == "create" else "Save changes" }}</button>
+        <a class="button secondary" href="/licenses">Back to list</a>
+    </div>
+</form>
+{% endblock %}

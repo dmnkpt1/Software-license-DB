@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}License Status Report{% endblock %}
+
+{% block content %}
+<section class="report">
+    <h2>License Status Report</h2>
+    {% if report %}
+        <div class="report-grid">
+            <p><strong>License ID:</strong> {{ report.license.license_id }}</p>
+            <p><strong>License Key:</strong> {{ report.license.license_key }}</p>
+            <p><strong>Status:</strong> {{ report.license.status }}</p>
+            <p><strong>Issue Date:</strong> {{ report.license.issue_date }}</p>
+            <p><strong>Expiration Date:</strong> {{ report.expiration_date }}</p>
+            <p><strong>Duration:</strong> {{ report.license.duration }}</p>
+            <p><strong>Activation Count:</strong> {{ report.license.activation_count }}</p>
+            <p><strong>Activation Limit:</strong> {{ report.license.limit_activation }}</p>
+            <p><strong>Remaining Activations:</strong> {{ report.remaining_activations }}</p>
+            <p><strong>Client:</strong> {{ report.license.client.contact_name }}</p>
+            <p><strong>License Type:</strong> {{ report.license.license_type.type_name }}</p>
+        </div>
+
+        <section class="panel">
+            <h3>Assigned Features</h3>
+            <ul class="plain-list">
+                {% for feature in report.features %}
+                    <li>{{ feature.feature_name }} (ID {{ feature.feature_id }})</li>
+                {% else %}
+                    <li>No features assigned.</li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="panel">
+            <h3>Latest Payment Info</h3>
+            {% if report.latest_payment %}
+                <p><strong>Transaction:</strong> {{ report.latest_payment.transaction_id }}</p>
+                <p><strong>Status:</strong> {{ report.latest_payment.payment_status }}</p>
+                <p><strong>Amount:</strong> {{ report.latest_payment.amount }} {{ report.latest_payment.currency }}</p>
+            {% else %}
+                <p>No payment confirmation recorded.</p>
+            {% endif %}
+        </section>
+    {% else %}
+        <p>No matching license found.</p>
+    {% endif %}
+</section>
+{% endblock %}

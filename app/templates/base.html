@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Software License DB{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/styles.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="wrap">
+            <h1><a href="/">Software License DB</a></h1>
+            <nav class="nav">
+                {% if current_role %}
+                    {% if "client_dashboard" in permissions %}
+                        <a href="/client">Client View</a>
+                    {% endif %}
+                    {% if "manager_dashboard" in permissions %}
+                        <a href="/manager">Manager View</a>
+                    {% endif %}
+                    {% if "license_view" in permissions %}
+                        <a href="/licenses">Licenses</a>
+                    {% endif %}
+                    {% if "payments" in permissions %}
+                        <a href="/payments">Payments</a>
+                    {% endif %}
+                    {% if "device_activate" in permissions %}
+                        <a href="/devices">My Activations</a>
+                    {% endif %}
+                    {% if "report_license_record" in permissions or "report_status" in permissions or "report_activation" in permissions %}
+                        <a href="/reports/license-record">Reports</a>
+                    {% endif %}
+                {% endif %}
+            </nav>
+            <div class="session-tools">
+                {% if current_role %}
+                    <span class="role-badge">
+                        {{ role_label }}{% if selected_client_name %}: {{ selected_client_name }}{% endif %}
+                    </span>
+                    <form method="post" action="/logout">
+                        <button type="submit" class="button secondary">Change role</button>
+                    </form>
+                {% else %}
+                    <a class="button secondary" href="/login">Choose role</a>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <main class="wrap">
+        {% if messages %}
+            <section class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.category }}">{{ message.text }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        {% if errors %}
+            <section class="messages">
+                {% for error in errors %}
+                    <div class="message error">{{ error }}</div>
+                {% endfor %}
+            </section>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

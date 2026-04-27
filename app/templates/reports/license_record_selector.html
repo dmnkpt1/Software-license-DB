@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Reports</h2>
+    </div>
+</section>
+
+<section class="grid">
+    {% for license in licenses %}
+        <article class="card">
+            <h3>{{ license.license_key }}</h3>
+            <p>{{ license.client.contact_name }} | {{ license.license_type.type_name }}</p>
+            <div class="button-row">
+                {% if "report_license_record" in permissions %}
+                    <a class="button" href="/reports/license-record/{{ license.license_key }}">License Record</a>
+                {% endif %}
+                {% if "report_activation" in permissions %}
+                    <a class="button secondary" href="/reports/activation-record/{{ license.license_key }}">Activation Record</a>
+                {% endif %}
+                {% if "report_status" in permissions %}
+                    <a class="button secondary" href="/reports/license-status/{{ license.license_key }}">Status Report</a>
+                {% endif %}
+            </div>
+        </article>
+    {% else %}
+        <article class="card">
+            <h3>No licenses</h3>
+            <p>Create a license first to generate reports.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endblock %}

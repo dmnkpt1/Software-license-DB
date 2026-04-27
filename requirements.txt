@@ -1,0 +1,8 @@
+fastapi
+uvicorn[standard]
+pymysql
+jinja2
+python-multipart
+pydantic[email]
+itsdangerous
+cryptography

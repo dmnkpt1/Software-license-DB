@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Payments{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Payment Confirmations</h2>
+        <p>Read-only reference data from the external payment service.</p>
+    </div>
+</section>
+
+<table>
+    <thead>
+        <tr>
+            <th>Transaction</th>
+            <th>License Key</th>
+            <th>Status</th>
+            <th>Method</th>
+            <th>Amount</th>
+            <th>Currency</th>
+            <th>Tax Rate</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for payment in payments %}
+            <tr>
+                <td>{{ payment.transaction_id }}</td>
+                <td>{{ payment.license_key }}</td>
+                <td>{{ payment.payment_status }}</td>
+                <td>{{ payment.payment_method }}</td>
+                <td>{{ payment.amount }}</td>
+                <td>{{ payment.currency }}</td>
+                <td>{{ payment.tax_rate }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">No payment confirmations found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

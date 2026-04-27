@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block title %}Assign Features{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>Feature Assignment Form</h2>
+    </div>
+</section>
+
+{% if license %}
+<section class="panel">
+    <p><strong>License:</strong> {{ license.license_key }}</p>
+    <p><strong>Client:</strong> {{ license.client.contact_name }}</p>
+    <p><strong>Status:</strong> {{ license.status }}</p>
+</section>
+
+<form method="post" class="panel">
+    <div class="checkbox-list">
+        {% for feature in features %}
+            <label class="checkbox-item">
+                <input type="checkbox" name="feature_ids" value="{{ feature.feature_id }}" {% if feature.feature_id in selected_feature_ids %}checked{% endif %}>
+                <span>{{ feature.feature_name }} (ID {{ feature.feature_id }})</span>
+            </label>
+        {% else %}
+            <p>No features available.</p>
+        {% endfor %}
+    </div>
+    <div class="toolbar">
+        <button class="button" type="submit">Save feature assignments</button>
+        <a class="button secondary" href="/licenses">Back to licenses</a>
+    </div>
+</form>
+
+<section class="panel">
+    <h3>Current assignments</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Feature ID</th>
+                <th>Feature Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for link in license.feature_links %}
+                <tr>
+                    <td>{{ link.feature_id }}</td>
+                    <td>{{ link.feature.feature_name if link.feature else "Unknown" }}</td>
+                    <td>
+                        <form method="post" action="/licenses/{{ license.license_key }}/features/{{ link.feature_id }}/delete">
+                            <button type="submit" class="danger">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">No features assigned.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</section>
+{% endif %}
+{% endblock %}

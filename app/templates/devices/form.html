@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Activate Device" if mode == "create" else "Edit Device Activation" }}{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>{{ "Device Activation Form" if mode == "create" else "Edit Device Activation" }}</h2>
+    </div>
+</section>
+
+<form method="post" class="panel">
+    <div class="form-grid">
+        <label>
+            License Key
+            <select name="license_key" {% if mode == "edit" %}disabled{% endif %} required>
+                <option value="">Select license</option>
+                {% for license in licenses %}
+                    <option value="{{ license.license_key }}" {% if form_data.license_key == license.license_key %}selected{% endif %}>
+                        {{ license.license_key }} ({{ license.status }})
+                    </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Hardware ID
+            <input type="text" name="hardware_id" value="{{ form_data.hardware_id }}" {% if mode == "edit" %}readonly{% endif %} required>
+        </label>
+        <label>
+            Device Status
+            <select name="device_status" required>
+                {% for value in device_statuses %}
+                    <option value="{{ value }}" {% if form_data.device_status == value %}selected{% endif %}>{{ value }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>
+            Activation Date
+            <input type="date" name="activation_date" value="{{ form_data.activation_date }}" required>
+        </label>
+    </div>
+    <div class="toolbar">
+        <button class="button" type="submit">{{ "Activate device" if mode == "create" else "Save changes" }}</button>
+        <a class="button secondary" href="/devices">Back to list</a>
+    </div>
+</form>
+{% endblock %}

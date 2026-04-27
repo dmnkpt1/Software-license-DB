@@ -1,0 +1,663 @@
+## Step 0: Review the workflow. Introduction
+
+This report describes the implementation and design of the database system of software license domain. 
+
+## Step 1: Specify in-scope stakeholders, tasks, input and output documents
+
+### Inputs:
+
+Requirements for the conceptual model from homework 1, logical schema from homework 2
+
+### **Outputs:**
+
+In scope stakeholders, scoping diagram, list of in scope tasks, input documents, output documents
+
+**In-Scope Stakeholders:**
+
+1. Client
+    
+    purchases licenses, uses their features, activates them on devices
+    
+2. License Manager
+    
+    creates licenses, assigns them to clients, and manages license details
+    
+3. Support Manager
+    
+    handles license activation on devices and monitors activation limits
+    
+
+**Out of scope:**
+
+1. Software developers
+2. Payment Service (some external system)
+3. Marketing and sales teams
+
+Scoping
+
+The database system is focused on software license management. The in-scope part includes license creation, license activation, license status checking,  feature assignment
+Payment processing is out of scope, but payment confirmation is used as an input for license creation.
+Software development, marketing, and sales (teams) are also out of scope because these activities are not automated by the database system
+
+**Tasks and Stakeholders in Software License System (table)**
+
+![image.png](attachment:a065a736-ccc0-4ec4-bf73-f439ecbda0be:image.png)
+
+In-scope tasks that require automation by the Software License DBS are create license, activate license, assign features to license, and check license status.
+The task process payment is out of scope because it is performed by an external payment service.
+However, payment confirmation is used by the system as an input for license creation.
+
+![image.png](attachment:fa565484-cb3f-4e0f-b044-c235cd2f0255:image.png)
+
+The in-scope stakeholders are Client, License Manager, and Support Manager.
+Payment Service is outside the scope, but it provides payment confirmation for license creation. (дописати про тих двох інших?)
+
+### **Input Documents**
+
+The system will use these input documents : License Request, Payment Confirmation, Device Information, Feature List
+
+And detailed description of each:
+
+**License Request**
+
+contains a request from a client to create a software license
+
+structure : client_id, request_id, request_date, licence_type, duration, activation_limit
+
+**Payment Confirmation**
+
+confirms successful payment
+
+structure : transaction_id, payment_date, payment_status, payment_method, amount, currency, license_id
+
+**Device Information**
+
+contains information about a device where the license is activated
+
+structure : device_id, hardware_id, operating_system, activation_date, license_id
+
+**Feature List**
+
+contains available features that can be assigned to a license
+
+structure : feature_id, feature_name, description
+
+### **Output Documents**
+
+The system generates the following output documents: License Record, Activation Record, License Status Report, Updated License Record
+
+And detailed description of each:
+
+**License Record**
+
+provides information about a created license
+
+structure : license_id, license_key, issue_date, expiration_date , status, client_id, license_type
+
+**Activation Record**
+
+contains information about license activation on a device
+
+structure : activation_id, device_id, license_id, activation_date, activation_status
+
+**License Status Report**
+
+shows the current status of a license
+
+structure : license_id, status, expiration_date, activation_count, activation_limit
+
+# Step 2: External views for in-scope stakeholders
+
+### Inputs:
+
+Requirements for the conceptual model from homework 1, logical schema from homework 2, in-scope stakeholders from Step 1, input and output documents from Step 1
+
+#### **Outputs:**
+
+External view for Client, License Manager
+
+Change requirements for the initial conceptual model
+
+From Step 1, the in-scope stakeholders are Client, License Manager. So we elaborate external views for these stakeholders. Each view includes only the data that is needed for the stakeholder’s tasks. Unnecessary elements from the initial conceptual model are removed.
+and new elements can be added if needed.
+
+### **External view for client**
+
+**Task: Activate license**
+
+(The stakeholder involved is ****Client)
+
+The automated operation is:
+
+O1: **Activate a software license on a device using license data and device information**
+
+- This operation will be automated by the Software License DBS
+- Input data object : SoftwareLicense (license_id, license_key, status), Device (hardware_id, activation_date)
+- Input document : License Record, Device Information
+- Output document : Activation Record
+
+**Task: Check License Status**
+
+(The stakeholder involved is Client)
+
+The automated operation is:
+
+O2: **Retrieve and display the current license status information**
+
+- This operation will be automated by the Software License DBS
+- Input data object : SoftwareLicense (license_id, status, expiration_date, activation_count)
+- Input document : License Record, License ID
+- Output document : License Status Report
+
+**Conceptual Model Changes**
+
+In conceptual model for Client, the following entity types are kept: Client, SoftwareLicense, Device, Feature. Payment and LicenseType entities, removed, because it’s no need in them for this stakeholder, as these data types are not required for the Client tasks.
+
+додаткове не знаю чи додавати 
+
+The relationships: owns, activates, includes were kept. And pays for, categorizes, utilizes removed.
+
+Also new  element activation_count was added in SoftwareLicense. Is added to support license usage tracking and reporting.
+
+![image.png](attachment:7ea01eb5-35b9-49fa-a9e9-33f1ebcc150e:image.png)
+
+### **External view for License Manager**
+
+**Task: Create License**
+
+(The stakeholder involved is ****License ****Manager)
+
+The automated operation is:
+
+O1: **Create a new software license using client data and payment confirmation**
+
+- This operation will be partially automated by the Software License DBS
+- Input data object : Client, Payment, LicenseType
+- Input document : License Request, Payment Confirmation
+- Output document : License Record
+
+**Task: Assign features to license**
+
+(The stakeholder involved is ****License ****Manager)
+
+The automated operation is:
+
+O2: **Assign selected features to an existing software license**
+
+- This operation will be automated by the Software License DBS
+- Input data object : SoftwareLicense, Feature
+- Input document : Feature list, License Record
+- Output document : License Status Report
+
+**Task:** **Provide License**
+
+Stakeholders involved: License Manager, Client
+
+The operation is manual
+
+**Conceptual Model Changes**
+
+The License Manager works with creating and managing licenses. This requires client, license, payment, and feature data. So in conceptual model for License Manager, the following entity types are kept: Client, SoftwareLicense, Payment, License Type, Feature. As data about device is not needed, Device entity is removed.
+
+додаткове не знаю чи додавати (about relationships)
+
+The relationships: owns, pays for, categorizes, includes were kept. And activates, utilizes removed.
+
+Also I removed some attributes (street, city, country, postal_code) from Client ET, because to keep some privacy and keep only essential information. 
+
+![image.png](attachment:a2d76233-1b58-4273-bf62-83aeea5ce4d7:image.png)
+
+## Step 3: Harmonize external views in a refined conceptual model
+
+### Inputs:
+
+External view for Client, External view for License Manager
+
+#### **Outputs:**
+
+Refined conceptual model for the Software License database, harmonized set of relevant entities, attributes, and relationships
+
+**Harmonization of external views**
+
+The comparison of the Client external view and the License Manager external view does not reveal big conflicts. Both external  views include the entity types Client, SoftwareLicense, and Feature.
+These elements are therefore kept in the refined conceptual model
+
+Also License Manager external view need Payment and License Type. These elements are needed for license creation and management so they are kept in refined conceptual model. (дописати про відношення?)
+
+Client external view needs Device for license activation, so it’s kept in refined conceptual model.
+
+The attribute activation_count is added to SoftwareLicense as a new element. Because, it is required for monitoring license activations and for generating the license status report.
+
+(additional ?
+
+The ternary relationship **utilizes** is removed as obsolete because it is not required for the in-scope automated tasks of the DBS.)
+
+So, as the result the refined conceptual model contains: 
+
+Client, SoftwareLicense, Payment, LicenseType, Device, Feature
+
+The new attribute activation_count is added to SoftwareLicense. And relationship utilizes is removed.
+
+![image.png](attachment:79ee5dd4-1368-4055-8c0a-8ab8402db720:image.png)
+
+![image.png](attachment:01a4b3bc-a150-4875-9cd0-31f3665067fb:image.png)
+
+## Step 4: Refine database schema
+
+### Inputs:
+
+Refined conceptual model developed in Step 3
+
+#### **Outputs:**
+
+Relational schema of the Software License database, DDL queries for all tables (updated), results of DDL execution
+
+**Changes Compared to HW2**
+
+The relational schema was updated based on the refined conceptual model:
+
+- The ternary relation utilizes was removed, therefore the table device_feature is not included in the updated schema.
+- A new attribute activation_count was added to the software_license table.
+- All other tables remain mostly unchanged.
+
+The relational schema was implemented using SQL DDL queries.
+
+Each table was created using the “CREATE TABLE” statement, including primary keys and foreign keys.
+
+```sql
+DROP DATABASE IF EXISTS software_license;
+CREATE DATABASE IF NOT EXISTS software_license
+    CHARACTER SET 'utf8mb4' COLLATE 'utf8mb4_unicode_ci';
+USE software_license;
+
+DROP TABLE IF EXISTS client;
+CREATE TABLE client
+(
+    client_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT 'Primary key of client',
+    contact_name VARCHAR(100) NOT NULL COMMENT 'Client name',
+    contact_email VARCHAR(150) NOT NULL COMMENT 'Client contact email',
+    street VARCHAR(150),
+    city VARCHAR(100),
+    country VARCHAR(100),
+    postal_code VARCHAR(20),
+    PRIMARY KEY (client_id)
+) ENGINE = innodb COMMENT = 'Client entity type.';
+
+DESCRIBE client;
+
+CREATE TABLE license_type
+(
+    type_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '(PK)' ,
+    type_name VARCHAR(50) NOT NULL COMMENT 'Name of the license type',
+    description VARCHAR(300) COMMENT 'Description of the license',
+    PRIMARY KEY (type_id)
+);
+
+DESCRIBE license_type;
+
+CREATE TABLE feature
+(
+    feature_id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT COMMENT '(PK)',
+    feature_name VARCHAR(100) NOT NULL,
+    PRIMARY KEY (feature_id)
+) ENGINE = innodb COMMENT = 'Feature entity type';
+
+DESCRIBE feature;
+
+CREATE TABLE software_license
+(
+    license_key VARCHAR(80) NOT NULL COMMENT '(PK)',
+    license_id BIGINT UNSIGNED NOT NULL COMMENT 'Internal license identifier',
+    issue_date DATE NOT NULL COMMENT 'Time when license was generated',
+    status VARCHAR(30) NOT NULL COMMENT 'Current license status',
+    duration INT UNSIGNED NOT NULL COMMENT 'Duration of license in days',
+    limit_activation INT UNSIGNED NOT NULL COMMENT 'Max allowed activations',
+    activation_count INT UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Current number of activations',
+    client_id BIGINT UNSIGNED NOT NULL,
+    type_id BIGINT UNSIGNED NOT NULL,
+    PRIMARY KEY (license_key)
+) ENGINE = innodb COMMENT = 'Software license entity type';
+
+CREATE TABLE payment
+(
+    transaction_id VARCHAR(80) NOT NULL COMMENT 'PK of payment',
+    payment_status VARCHAR(30) NOT NULL COMMENT 'Payment status',
+    payment_method VARCHAR(30) NOT NULL,
+    amount INT UNSIGNED NOT NULL COMMENT 'Payment amount',
+    currency VARCHAR(10) NOT NULL COMMENT 'Currency code',
+    tax_rate INT UNSIGNED NOT NULL,
+    license_key VARCHAR(80) NOT NULL,
+    PRIMARY KEY (transaction_id)
+) ENGINE = innodb COMMENT = 'Payment entity type';
+
+CREATE TABLE device
+(
+    license_key VARCHAR(80) NOT NULL COMMENT 'Part of PK and reference to software license',
+    hardware_id VARCHAR(100) NOT NULL COMMENT 'Hardware identifier of the device',
+    device_status VARCHAR(30) NOT NULL COMMENT 'Current status of the device',
+    activation_date DATE NOT NULL COMMENT 'Date when the device was activated',
+    PRIMARY KEY (license_key, hardware_id)
+) ENGINE = innodb COMMENT = 'Device entity type';
+
+CREATE TABLE software_license_feature
+(
+    license_key VARCHAR(80) NOT NULL COMMENT 'Part of PK and reference to software license',
+    feature_id BIGINT UNSIGNED NOT NULL COMMENT 'Part of PK and reference to feature',
+    PRIMARY KEY (license_key, feature_id)
+) ENGINE = innodb COMMENT = 'Relation between software license and feature';
+
+ALTER TABLE software_license
+ADD CONSTRAINT fk_software_license_client
+FOREIGN KEY (client_id)
+REFERENCES client (client_id);
+ALTER TABLE software_license
+ADD CONSTRAINT fk_software_license_type
+FOREIGN KEY (type_id)
+REFERENCES license_type (type_id);
+ALTER TABLE device
+ADD CONSTRAINT fk_device_software_license
+FOREIGN KEY (license_key)
+REFERENCES software_license (license_key);
+ALTER TABLE payment
+ADD CONSTRAINT fk_payment_software_license
+FOREIGN KEY (license_key)
+REFERENCES software_license (license_key);
+ALTER TABLE software_license_feature
+ADD CONSTRAINT fk_software_license_feature_license
+FOREIGN KEY (license_key)
+REFERENCES software_license (license_key);
+ALTER TABLE software_license_feature
+ADD CONSTRAINT fk_software_license_feature_feature
+FOREIGN KEY (feature_id)
+REFERENCES feature (feature_id);
+```
+
+**Results of DDL Execution**
+
+After executing the DDL queries, all tables were successfully created in the database.
+
+тут ше якісь фото?
+
+![image.png](attachment:0913110f-3f01-42cf-92e3-575fa8149cbf:image.png)
+
+Each entity from the conceptual model is represented as a table. Primary keys uniquely identify each record in the table. Foreign keys are used to represent relationships between tables.
+
+The many-to-many relationship between SoftwareLicense and Feature is implemented using a separate table.
+
+## Step 5: Normalize your database to 3NF
+
+### Inputs:
+
+Refined relational schema from Step 4
+
+#### **Outputs:**
+
+Database schema normalized to 1NF, 2NF, and 3NF
+
+**Normalization to 1NF**
+
+For normalizing a table to 1NF we check if all the attributes are atomic. Non-atomic attributes are
+split into atomic parts.
+
+The tables in the schema satisfy this condition because:
+
+- **client** contains only atomic values such as client name, email, and address fields
+- **license_type** contains only atomic values
+- **feature** contains only atomic values
+- **software_license** contains only atomic values
+- **payment** contains only atomic values
+- **device** contains only atomic values
+- **software_license_feature** contains only atomic key values
+
+Therefore, all relations are in 1NF.
+
+**Normalization to 2NF**
+
+For normalizing a table to 2NF we check if it has partial functional dependencies of non-prime
+attributes on prime attributes. If found, partial functional dependencies are removed by table
+decomposition.
+
+All tables are in the second normal form.
+
+Tables with a single primary key, such as **client**, **license_type**, **feature**, **software_license**, and **payment**, automatically satisfy 2NF because all attributes depend on the primary key.
+
+For tables with composite keys:
+
+- In **device**, the primary key is (license_key, hardware_id).
+In this design, the table represents a device activation record.
+The attributes **device_status** and **activation_date** describe the activation and depend on both the license and the device.
+- In **software_license_feature**, the primary key is (license_key, feature_id) and there are no additional attributes, so no partial dependency exists.
+
+Therefore, no partial dependencies are present, and the schema is in 2NF.
+
+**Normalization to 3NF**
+
+For normalizing a table to 3NF we check if it has transitive functional dependencies of non-prime
+attributes on prime attributes. If found, transitive functional dependencies are removed by table
+decomposition.
+
+The schema also satisfies the third normal form.
+
+For example:
+
+- In **software_license**, the attribute **type_id** references the **license_type** table.
+The details of the license type (such as name and description) are stored separately, not inside the **software_license** table. This avoids transitive dependencies.
+- In **payment**, the attribute **license_key** is a foreign key, but no license-related attributes are duplicated in this table.
+- In **client**, all attributes such as **contact_name**, **contact_email**, and address fields depend directly on **client_id** and do not depend on each other.
+- In **device**, the non-key attributes **device_status** and **activation_date** describe the device activation record and do not depend on each other.
+
+Therefore, the schema does not contain transitive dependencies and satisfies 3NF.
+
+The relational schema satisfies the requirements of 1NF, 2NF, and 3NF.
+No additional decomposition was required.
+
+## Step 6: Populate your normalized database
+
+### Inputs:
+
+Normalized database schema from Step 5
+
+#### **Outputs:**
+
+Populated database with data, proof of successful population
+
+The data was loaded with the following queries:
+
+```sql
+LOAD DATA INFILE '/var/lib/mysql-files/client.csv'
+INTO TABLE client
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n';
+
+SELECT * FROM client;
+
+LOAD DATA INFILE '/var/lib/mysql-files/license_type.csv'
+INTO TABLE license_type
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n';
+
+SELECT * FROM license_type;
+
+LOAD DATA INFILE '/var/lib/mysql-files/feature.csv'
+INTO TABLE feature
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n';
+
+SELECT * FROM feature;
+
+LOAD DATA INFILE '/var/lib/mysql-files/software_license.csv'
+INTO TABLE software_license
+FIELDS TERMINATED BY ';'
+LINES TERMINATED BY '\r\n'
+(license_key, license_id, issue_date, status, duration, limit_activation, activation_count, client_id, type_id);
+
+SELECT * FROM software_license;
+
+SELECT license_key FROM software_license;
+
+LOAD DATA INFILE '/var/lib/mysql-files/payment.csv'
+INTO TABLE payment
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\r\n'
+(transaction_id, payment_status, payment_method, amount, currency, tax_rate, license_key);
+
+SELECT * FROM payment;
+
+LOAD DATA INFILE '/var/lib/mysql-files/device.csv'
+INTO TABLE device
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\r\n'
+(license_key, hardware_id, device_status, activation_date);
+
+SELECT * FROM device;
+
+LOAD DATA INFILE '/var/lib/mysql-files/software_license_feature.csv'
+INTO TABLE software_license_feature
+FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\r\n'
+(license_key, feature_id);
+
+SELECT * FROM software_license_feature;
+```
+
+This was output:
+
+```sql
+[2026-04-22 16:21:31] software_license> LOAD DATA INFILE '/var/lib/mysql-files/client.csv'
+                                        INTO TABLE client
+                                        FIELDS TERMINATED BY ','
+                                        LINES TERMINATED BY '\n'
+[2026-04-22 16:21:31] 7 rows affected in 138 ms
+[2026-04-22 16:21:31] software_license> SELECT * FROM client
+[2026-04-22 16:21:33] 7 rows retrieved starting from 1 in 1 s 273 ms (execution: 164 ms, fetching: 1 s 109 ms)
+[2026-04-22 16:21:33] software_license> LOAD DATA INFILE '/var/lib/mysql-files/license_type.csv'
+                                        INTO TABLE license_type
+                                        FIELDS TERMINATED BY ','
+                                        LINES TERMINATED BY '\n'
+[2026-04-22 16:21:33] 3 rows affected in 42 ms
+[2026-04-22 16:21:34] software_license> SELECT * FROM license_type
+[2026-04-22 16:21:35] 3 rows retrieved starting from 1 in 1 s 200 ms (execution: 102 ms, fetching: 1 s 98 ms)
+[2026-04-22 16:21:35] software_license> LOAD DATA INFILE '/var/lib/mysql-files/feature.csv'
+                                        INTO TABLE feature
+                                        FIELDS TERMINATED BY ','
+                                        LINES TERMINATED BY '\n'
+[2026-04-22 16:21:35] 6 rows affected in 25 ms
+[2026-04-22 16:21:36] software_license> SELECT * FROM feature
+[2026-04-22 16:21:37] 6 rows retrieved starting from 1 in 1 s 224 ms (execution: 89 ms, fetching: 1 s 135 ms)
+[2026-04-22 16:24:17] software_license> LOAD DATA INFILE '/var/lib/mysql-files/software_license.csv'
+                                        INTO TABLE software_license
+                                        FIELDS TERMINATED BY ';'
+                                        LINES TERMINATED BY '\r\n'
+                                        (license_key, license_id, issue_date, status, duration, limit_activation, activation_count, client_id, type_id)
+[2026-04-22 16:24:17] 7 rows affected in 85 ms
+[2026-04-22 16:24:17] software_license> SELECT * FROM software_license
+[2026-04-22 16:24:20] 7 rows retrieved starting from 1 in 2 s 675 ms (execution: 279 ms, fetching: 2 s 396 ms)
+[2026-04-22 16:30:16] software_license> SELECT license_key FROM software_license
+[2026-04-22 16:30:17] 7 rows retrieved starting from 1 in 539 ms (execution: 40 ms, fetching: 499 ms)
+[2026-04-22 16:30:17] software_license> LOAD DATA INFILE '/var/lib/mysql-files/payment.csv'
+                                        INTO TABLE payment
+                                        FIELDS TERMINATED BY ','
+                                        LINES TERMINATED BY '\r\n'
+                                        (transaction_id, payment_status, payment_method, amount, currency, tax_rate, license_key)
+[2026-04-22 16:30:17] 7 rows affected in 281 ms
+[2026-04-22 16:30:18] software_license> SELECT * FROM payment
+[2026-04-22 16:30:18] 7 rows retrieved starting from 1 in 594 ms (execution: 45 ms, fetching: 549 ms)
+[2026-04-22 16:30:19] software_license> LOAD DATA INFILE '/var/lib/mysql-files/device.csv'
+                                        INTO TABLE device
+                                        FIELDS TERMINATED BY ','
+                                        LINES TERMINATED BY '\r\n'
+                                        (license_key, hardware_id, device_status, activation_date)
+[2026-04-22 16:30:19] 7 rows affected in 72 ms
+[2026-04-22 16:30:19] software_license> SELECT * FROM device
+[2026-04-22 16:30:20] 7 rows retrieved starting from 1 in 858 ms (execution: 117 ms, fetching: 741 ms)
+[2026-04-22 16:30:20] software_license> LOAD DATA INFILE '/var/lib/mysql-files/software_license_feature.csv'
+                                        INTO TABLE software_license_feature
+                                        FIELDS TERMINATED BY ','
+                                        LINES TERMINATED BY '\r\n'
+                                        (license_key, feature_id)
+[2026-04-22 16:30:20] 11 rows affected in 65 ms
+[2026-04-22 16:30:21] software_license> SELECT * FROM software_license_feature
+[2026-04-22 16:30:22] 11 rows retrieved starting from 1 in 1 s 305 ms (execution: 42 ms, fetching: 1 s 263 ms)
+```
+
+**client**
+
+csv file:
+
+![image.png](attachment:1f867162-c042-4e5f-a9dc-b6aeddb5f9a1:image.png)
+
+output:
+
+![image.png](attachment:e77cece5-b6b4-466e-9785-1c5b069faac4:image.png)
+
+**license_type**
+
+csv file:
+
+![image.png](attachment:11d69b07-5ab2-4bfe-b9fe-573a8f9513a4:image.png)
+
+output:
+
+![image.png](attachment:ad23c563-41f5-411c-98bd-76cd7aaff721:image.png)
+
+**feature**
+
+csv file:
+
+![image.png](attachment:72f2e320-6b0d-466c-b9e0-3484766e9631:image.png)
+
+output:
+
+![image.png](attachment:c1e29c76-bec9-444b-8605-903732b0daca:image.png)
+
+**software_license**
+
+csv file:
+
+![image.png](attachment:17647669-6e2d-4224-903d-5daae0e5ca9c:image.png)
+
+output:
+
+![image.png](attachment:560deb98-f442-42dc-a10d-35d54d384b5a:image.png)
+
+**payment**
+
+csv file:
+
+![image.png](attachment:4b2e7c00-6646-44d5-961a-db5e81b10b1a:image.png)
+
+output:
+
+![image.png](attachment:aa500875-364e-4e55-b2bd-13f8193f211f:image.png)
+
+**device**
+
+csv file:
+
+![image.png](attachment:1f42e3f7-9935-4931-a6a2-07db9ff0572b:image.png)
+
+output:
+
+![image.png](attachment:ab3c5cc1-c864-481a-88d5-d9f09644e9f6:image.png)
+
+**software_license_feature**
+
+csv file:
+
+![image.png](attachment:a0f3a5ce-9137-426a-8c51-319b01f89471:image.png)
+
+[]()
+
+output:
+
+![image.png](attachment:68206481-cfdc-43d8-98ae-a9fe0a680713:image.png)
+
+The data used in this step is based on the dataset prepared in HW2 and updated to match the refined schema.
+
+The table device_feature is no longer populated, because the corresponding relation was removed from the refined conceptual model. The table software_license was updated with the new attribute activation_count, so the source data for this table was updated accordingly.
+
+Inputs:
+
+Requirements for the conceptual model from homework 1, logical schema from homework 2
+
+### **Outputs:**

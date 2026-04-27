@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Activation Record{% endblock %}
+
+{% block content %}
+<section class="report">
+    <h2>Activation Record</h2>
+    {% if license %}
+        <p><strong>License Key:</strong> {{ license.license_key }}</p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Hardware ID</th>
+                    <th>Device Status</th>
+                    <th>Activation Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for device in devices %}
+                    <tr>
+                        <td>{{ device.hardware_id }}</td>
+                        <td>{{ device.device_status }}</td>
+                        <td>{{ device.activation_date }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3">No device activations recorded.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No matching license found.</p>
+    {% endif %}
+</section>
+{% endblock %}

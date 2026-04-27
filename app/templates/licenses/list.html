@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Licenses{% endblock %}
+
+{% block content %}
+<section class="section-header">
+    <div>
+        <h2>{{ "Software Licenses" if "license_manage" in permissions else "Client License View" }}</h2>
+    </div>
+    {% if "license_manage" in permissions %}
+        <a class="button" href="/licenses/create">Create license</a>
+    {% endif %}
+</section>
+
+<table>
+    <thead>
+        <tr>
+            <th>License ID</th>
+            <th>License Key</th>
+            <th>Client</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Issue Date</th>
+            <th>Duration</th>
+            <th>Activation</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for license in licenses %}
+            <tr>
+                <td>{{ license.license_id }}</td>
+                <td>{{ license.license_key }}</td>
+                <td>{{ license.client.contact_name }}</td>
+                <td>{{ license.license_type.type_name }}</td>
+                <td>{{ license.status }}</td>
+                <td>{{ license.issue_date }}</td>
+                <td>{{ license.duration }}</td>
+                <td>{{ license.activation_count }} / {{ license.limit_activation }}</td>
+                <td class="actions">
+                    {% if "license_manage" in permissions %}
+                        <a href="/licenses/{{ license.license_key }}/edit">Edit</a>
+                    {% endif %}
+                    {% if "features" in permissions %}
+                        <a href="/licenses/{{ license.license_key }}/features">Features</a>
+                    {% endif %}
+                    {% if "report_license_record" in permissions %}
+                        <a href="/reports/license-record/{{ license.license_key }}">Record</a>
+                    {% endif %}
+                    {% if "report_status" in permissions %}
+                        <a href="/reports/license-status/{{ license.license_key }}">Status</a>
+                    {% endif %}
+                    {% if "device_activate" in permissions %}
+                        <a href="/reports/activation-record/{{ license.license_key }}">Activations</a>
+                    {% endif %}
+                    {% if "license_manage" in permissions %}
+                        <form method="post" action="/licenses/{{ license.license_key }}/delete">
+                            <button type="submit" class="danger">Delete</button>
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">No licenses found.</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
