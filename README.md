@@ -4,7 +4,10 @@
 python3 -m venv .venv
 source .venv/bin/activate
 pip3 install -r requirements.txt
-export DATABASE_URL="mysql+pymysql://root:root@localhost:3306/software_license"
+cp .env.example .env
+set -a
+source .env
+set +a
 uvicorn app.main:app --reload
 ```
 
